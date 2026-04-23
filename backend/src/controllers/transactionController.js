@@ -1,15 +1,15 @@
 exports.getTransactions = async (_req, res) => {
-  res.status(200).json({ message: 'Get transactions placeholder' });
+  res.status(200).json({ message: 'Teammate 3 will implement transaction listing' });
 };
 
 exports.createTransaction = async (_req, res) => {
-  res.status(201).json({ message: 'Create transaction placeholder' });
+  res.status(201).json({ message: 'Teammate 3 will implement transaction creation' });
 };
 
 exports.updateTransaction = async (_req, res) => {
-  res.status(200).json({ message: 'Update transaction placeholder' });
+  res.status(200).json({ message: 'Teammate 3 will implement transaction update' });
 };
 
 exports.deleteTransaction = async (_req, res) => {
-  res.status(200).json({ message: 'Delete transaction placeholder' });
+  res.status(200).json({ message: 'Teammate 3 will implement transaction deletion' });
 };
