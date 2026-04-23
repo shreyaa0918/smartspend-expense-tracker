@@ -1,10 +1,17 @@
-import Navbar from '../components/common/Navbar';
+import React from "react";
+import Navbar from "../components/common/Navbar";
 
 export default function DashboardPage() {
   return (
-    <div>
+    <div className="dashboard-page">
       <Navbar />
-      <h1>Dashboard</h1>
+      <main className="dashboard-placeholder">
+        <h1>Dashboard</h1>
+        <p>
+          Dashboard module is intentionally a placeholder for now. Auth, route protection, and
+          logout flow are ready.
+        </p>
+      </main>
     </div>
   );
 }
