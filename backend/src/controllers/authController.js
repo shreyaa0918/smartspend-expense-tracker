@@ -1,7 +1,17 @@
-exports.register = async (_req, res) => {
-  res.status(201).json({ message: 'Register endpoint placeholder' });
-};
+const asyncHandler = require('../utils/asyncHandler');
+const { registerUser, loginUser } = require('../services/authService');
+const { validateRegisterInput, validateLoginInput } = require('../validations/authValidation');
 
-exports.login = async (_req, res) => {
-  res.status(200).json({ message: 'Login endpoint placeholder' });
-};
+const register = asyncHandler(async (req, res) => {
+  validateRegisterInput(req.body);
+  const response = await registerUser(req.body);
+  res.status(201).json(response);
+});
+
+const login = asyncHandler(async (req, res) => {
+  validateLoginInput(req.body);
+  const response = await loginUser(req.body);
+  res.status(200).json(response);
+});
+
+module.exports = { register, login };

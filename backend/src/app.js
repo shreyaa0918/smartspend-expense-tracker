@@ -14,6 +14,10 @@ app.get('/', (_req, res) => {
   res.json({ message: 'SmartSpend API running' });
 });
 
+app.get('/api/health', (_req, res) => {
+  res.json({ message: 'API healthy' });
+});
+
 app.use('/api/auth', authRoutes);
 app.use('/api/transactions', transactionRoutes);
 app.use(errorMiddleware);
