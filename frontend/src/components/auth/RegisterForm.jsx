@@ -4,12 +4,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { clearAuthError } from "../../features/auth/authSlice";
 import { registerUser } from "../../features/auth/authThunks";
 
-const demoProfiles = [
-  { name: "Student Demo", email: "demo.student@smartspend.com", password: "password123" },
-  { name: "Intern Demo", email: "demo.intern@smartspend.com", password: "password123" },
-  { name: "Analyst Demo", email: "demo.analyst@smartspend.com", password: "password123" }
-];
-
 export default function RegisterForm() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -37,10 +31,6 @@ export default function RegisterForm() {
     if (registerUser.fulfilled.match(resultAction)) {
       navigate("/login", { replace: true });
     }
-  };
-
-  const applyDemoProfile = (profile) => {
-    setFormData(profile);
   };
 
   return (
@@ -103,26 +93,6 @@ export default function RegisterForm() {
       <p className="auth-card__footer">
         Already have an account? <Link to="/login">Sign in</Link>
       </p>
-
-      <section className="demo-panel">
-        <h2 className="demo-panel__title">One-click demo profiles</h2>
-        <p className="demo-panel__hint">
-          Use any profile below to register quickly, then login from the Login page.
-        </p>
-        <div className="demo-panel__list">
-          {demoProfiles.map((profile) => (
-            <button
-              key={profile.email}
-              type="button"
-              className="demo-user"
-              onClick={() => applyDemoProfile(profile)}
-            >
-              <span className="demo-user__label">{profile.name}</span>
-              <span className="demo-user__meta">{profile.email} / password123</span>
-            </button>
-          ))}
-        </div>
-      </section>
     </div>
   );
 }

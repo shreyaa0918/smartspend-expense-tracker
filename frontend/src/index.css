@@ -203,11 +203,56 @@ a:hover {
   color: #64748b;
 }
 
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+}
+
+.summary-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 0.85rem 1rem;
+}
+
+.summary-card__label {
+  margin: 0 0 0.3rem;
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+.summary-card h3 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.summary-card--balance h3 { color: #1d4ed8; }
+.summary-card--income h3 { color: #15803d; }
+.summary-card--expense h3 { color: #b91c1c; }
+
+.dashboard-top-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
 .dashboard-grid {
   display: grid;
   grid-template-columns: 320px 1fr;
   gap: 1rem;
   align-items: start;
+}
+
+.chart-card {
+  min-height: 340px;
+}
+
+.chart-wrap {
+  position: relative;
+  height: 260px;
 }
 
 .transaction-card {
@@ -391,6 +436,14 @@ a:hover {
   }
 
   .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-top-grid {
     grid-template-columns: 1fr;
   }
 
