@@ -188,6 +188,153 @@ a:hover {
   min-height: 100vh;
 }
 
+.dashboard-shell {
+  max-width: 1100px;
+  margin: 1.5rem auto;
+  padding: 0 1rem 2rem;
+}
+
+.dashboard-header h1 {
+  margin: 0;
+}
+
+.dashboard-header p {
+  margin: 0.25rem 0 1rem;
+  color: #64748b;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 1rem;
+  align-items: start;
+}
+
+.transaction-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 1rem;
+}
+
+.transaction-card h2 {
+  margin: 0 0 0.8rem;
+  font-size: 1.1rem;
+}
+
+.transaction-form {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.input-control {
+  width: 100%;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  padding: 0.65rem 0.75rem;
+  font-size: 0.95rem;
+  background: #fff;
+}
+
+.transaction-form__actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.filter-bar {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin-bottom: 0.8rem;
+}
+
+.transaction-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.65rem;
+}
+
+.transaction-item {
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 0.75rem;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.transaction-item__category {
+  margin: 0 0 0.25rem;
+  font-weight: 600;
+}
+
+.transaction-item__meta,
+.transaction-item__notes {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+.transaction-item__notes {
+  margin-top: 0.2rem;
+}
+
+.transaction-item__right {
+  text-align: right;
+  min-width: 120px;
+}
+
+.transaction-item__amount {
+  margin: 0;
+  font-weight: 700;
+}
+
+.transaction-item__amount--income {
+  color: #15803d;
+}
+
+.transaction-item__amount--expense {
+  color: #b91c1c;
+}
+
+.transaction-item__actions {
+  margin-top: 0.4rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.4rem;
+}
+
+.btn--xs {
+  padding: 0.4rem 0.6rem;
+  font-size: 0.8rem;
+}
+
+.btn--danger {
+  background: #ef4444;
+  color: #fff;
+}
+
+.btn--danger:hover:enabled {
+  background: #dc2626;
+}
+
+.dashboard-status {
+  color: #64748b;
+  margin: 0.5rem 0;
+}
+
+.form-error {
+  color: #b91c1c;
+  margin: 0.25rem 0;
+  font-size: 0.9rem;
+}
+
+.dashboard-error {
+  margin-bottom: 0.8rem;
+}
+
 .navbar {
   display: flex;
   justify-content: space-between;
@@ -241,5 +388,13 @@ a:hover {
   .navbar__actions {
     width: 100%;
     justify-content: space-between;
+  }
+
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .filter-bar {
+    grid-template-columns: 1fr 1fr;
   }
 }
