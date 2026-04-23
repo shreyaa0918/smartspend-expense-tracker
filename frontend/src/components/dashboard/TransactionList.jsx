@@ -23,11 +23,16 @@ function inDateRange(transactionDate, startDate, endDate) {
   return true;
 }
 
-export default function TransactionList() {
+export default function TransactionList({ mode = "filtered", limit = null }) {
   const dispatch = useDispatch();
   const { items, filters, loading, submitting } = useSelector((state) => state.transactions);
 
   const filteredTransactions = useMemo(() => {
+    if (mode === "recent") {
+      const sorted = [...items].sort((a, b) => new Date(b.date) - new Date(a.date));
+      return limit ? sorted.slice(0, limit) : sorted;
+    }
+
     return items.filter((transaction) => {
       const typeMatch = filters.type === "all" || transaction.type === filters.type;
       const categoryMatch = filters.category
@@ -36,7 +41,7 @@ export default function TransactionList() {
       const dateMatch = inDateRange(transaction.date, filters.startDate, filters.endDate);
       return typeMatch && categoryMatch && dateMatch;
     });
-  }, [items, filters]);
+  }, [items, filters, mode, limit]);
 
   const onDelete = (id) => {
     dispatch(deleteTransaction(id));
@@ -47,7 +52,11 @@ export default function TransactionList() {
   }
 
   if (!filteredTransactions.length) {
-    return <p className="dashboard-status">No transactions found for current filters.</p>;
+    return (
+      <p className="dashboard-status">
+        {mode === "recent" ? "No recent transactions yet." : "No transactions found for current filters."}
+      </p>
+    );
   }
 
   return (

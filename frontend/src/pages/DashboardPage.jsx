@@ -3,6 +3,8 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Navbar from "../components/common/Navbar";
 import FilterBar from "../components/dashboard/FilterBar";
+import SpendingChart from "../components/dashboard/SpendingChart";
+import SummaryCards from "../components/dashboard/SummaryCards";
 import TransactionForm from "../components/dashboard/TransactionForm";
 import TransactionList from "../components/dashboard/TransactionList";
 import { fetchTransactions } from "../features/transactions/transactionThunks";
@@ -24,7 +26,17 @@ export default function DashboardPage() {
           <p>Manage your income and expenses from one place.</p>
         </div>
 
+        <SummaryCards />
+
         {error ? <p className="form-error dashboard-error">{error}</p> : null}
+
+        <div className="dashboard-top-grid">
+          <SpendingChart />
+          <section className="transaction-card">
+            <h2>Recent transactions</h2>
+            <TransactionList mode="recent" limit={5} />
+          </section>
+        </div>
 
         <div className="dashboard-grid">
           <div>
