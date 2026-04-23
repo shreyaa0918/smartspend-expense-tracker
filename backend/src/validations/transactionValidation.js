@@ -1,0 +1,1 @@
+// transactionValidation.js placeholder
