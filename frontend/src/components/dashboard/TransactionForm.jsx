@@ -2,11 +2,11 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   clearEditingTransaction,
-  clearTransactionError
+  clearTransactionError,
 } from "../../features/transactions/transactionSlice";
 import {
   createTransaction,
-  updateTransaction
+  updateTransaction,
 } from "../../features/transactions/transactionThunks";
 
 const defaultForm = {
@@ -14,7 +14,9 @@ const defaultForm = {
   amount: "",
   category: "",
   date: new Date().toISOString().slice(0, 10),
-  notes: ""
+  notes: "",
+  isRecurring: false,
+  recurrenceFrequency: "monthly",
 };
 
 export default function TransactionForm() {
@@ -27,19 +29,23 @@ export default function TransactionForm() {
       setFormData(defaultForm);
       return;
     }
-
     setFormData({
       type: editingTransaction.type,
       amount: editingTransaction.amount,
       category: editingTransaction.category,
       date: editingTransaction.date ? editingTransaction.date.slice(0, 10) : defaultForm.date,
-      notes: editingTransaction.notes || ""
+      notes: editingTransaction.notes || "",
+      isRecurring: editingTransaction.isRecurring || false,
+      recurrenceFrequency: editingTransaction.recurrenceFrequency || "monthly",
     });
   }, [editingTransaction]);
 
-  const onChange = (event) => {
-    const { name, value } = event.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+  const onChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
   };
 
   const resetForm = () => {
@@ -48,15 +54,19 @@ export default function TransactionForm() {
     setFormData(defaultForm);
   };
 
-  const onSubmit = async (event) => {
-    event.preventDefault();
+  const onSubmit = async (e) => {
+    e.preventDefault();
     const payload = {
       ...formData,
-      amount: Number(formData.amount)
+      amount: Number(formData.amount),
+      // Only send frequency if recurring is checked
+      recurrenceFrequency: formData.isRecurring ? formData.recurrenceFrequency : null,
     };
 
     if (editingTransaction?._id) {
-      const result = await dispatch(updateTransaction({ id: editingTransaction._id, payload }));
+      const result = await dispatch(
+        updateTransaction({ id: editingTransaction._id, payload })
+      );
       if (updateTransaction.fulfilled.match(result)) {
         resetForm();
       }
@@ -83,6 +93,7 @@ export default function TransactionForm() {
           <option value="expense">Expense</option>
           <option value="income">Income</option>
         </select>
+
         <input
           className="input-control"
           name="amount"
@@ -94,6 +105,7 @@ export default function TransactionForm() {
           onChange={onChange}
           required
         />
+
         <input
           className="input-control"
           name="category"
@@ -103,6 +115,7 @@ export default function TransactionForm() {
           onChange={onChange}
           required
         />
+
         <input
           className="input-control"
           name="date"
@@ -111,15 +124,39 @@ export default function TransactionForm() {
           onChange={onChange}
           required
         />
+
         <textarea
           className="input-control"
           name="notes"
           maxLength={200}
-          rows={3}
+          rows={2}
           placeholder="Notes (optional)"
           value={formData.notes}
           onChange={onChange}
         />
+
+        {/* ── Recurring toggle ───────────────────────────────────── */}
+        <label className="recurring-toggle">
+          <input
+            type="checkbox"
+            name="isRecurring"
+            checked={formData.isRecurring}
+            onChange={onChange}
+          />
+          <span>Recurring transaction</span>
+        </label>
+
+        {formData.isRecurring && (
+          <select
+            className="input-control"
+            name="recurrenceFrequency"
+            value={formData.recurrenceFrequency}
+            onChange={onChange}
+          >
+            <option value="weekly">Weekly</option>
+            <option value="monthly">Monthly</option>
+          </select>
+        )}
 
         {error ? <p className="form-error">{error}</p> : null}
 
@@ -128,7 +165,12 @@ export default function TransactionForm() {
             {submitting ? "Saving..." : editingTransaction ? "Update" : "Add"}
           </button>
           {editingTransaction ? (
-            <button className="btn btn--ghost" type="button" onClick={resetForm} disabled={submitting}>
+            <button
+              className="btn btn--ghost"
+              type="button"
+              onClick={resetForm}
+              disabled={submitting}
+            >
               Cancel
             </button>
           ) : null}

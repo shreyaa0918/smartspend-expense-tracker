@@ -1,9 +1,10 @@
 const mongoose = require('mongoose');
 const Transaction = require('../models/Transaction');
 const asyncHandler = require('../utils/asyncHandler');
+const { generateDueRecurringTransactions } = require('../services/recurringService');
 
 function validateTransactionPayload(payload) {
-  const { type, amount, category, date, notes } = payload;
+  const { type, amount, category, date, notes, isRecurring, recurrenceFrequency } = payload;
 
   if (!type || !['income', 'expense'].includes(type)) {
     const err = new Error('Type must be either income or expense');
@@ -35,10 +36,23 @@ function validateTransactionPayload(payload) {
     err.statusCode = 400;
     throw err;
   }
+
+  if (isRecurring && !['weekly', 'monthly'].includes(recurrenceFrequency)) {
+    const err = new Error('Recurring transactions must have a frequency of weekly or monthly');
+    err.statusCode = 400;
+    throw err;
+  }
 }
 
 const getTransactions = asyncHandler(async (req, res) => {
-  const transactions = await Transaction.find({ userId: req.user._id }).sort({ date: -1, createdAt: -1 });
+  // Auto-generate any overdue recurring instances on fetch
+  await generateDueRecurringTransactions(req.user._id);
+
+  const transactions = await Transaction.find({ userId: req.user._id }).sort({
+    date: -1,
+    createdAt: -1,
+  });
+
   res.status(200).json({
     message: 'Transactions fetched successfully',
     data: transactions,
@@ -48,13 +62,20 @@ const getTransactions = asyncHandler(async (req, res) => {
 const createTransaction = asyncHandler(async (req, res) => {
   validateTransactionPayload(req.body);
 
+  const { type, amount, category, date, notes, isRecurring, recurrenceFrequency } = req.body;
+  const recurring = Boolean(isRecurring);
+
   const transaction = await Transaction.create({
     userId: req.user._id,
-    type: req.body.type,
-    amount: Number(req.body.amount),
-    category: req.body.category.trim(),
-    date: new Date(req.body.date),
-    notes: req.body.notes ? req.body.notes.trim() : '',
+    type,
+    amount: Number(amount),
+    category: category.trim(),
+    date: new Date(date),
+    notes: notes ? notes.trim() : '',
+    isRecurring: recurring,
+    recurrenceFrequency: recurring ? recurrenceFrequency : null,
+    recurringParentId: null,
+    lastGeneratedDate: null,
   });
 
   res.status(201).json({
@@ -73,14 +94,19 @@ const updateTransaction = asyncHandler(async (req, res) => {
 
   validateTransactionPayload(req.body);
 
+  const { type, amount, category, date, notes, isRecurring, recurrenceFrequency } = req.body;
+  const recurring = Boolean(isRecurring);
+
   const transaction = await Transaction.findOneAndUpdate(
     { _id: id, userId: req.user._id },
     {
-      type: req.body.type,
-      amount: Number(req.body.amount),
-      category: req.body.category.trim(),
-      date: new Date(req.body.date),
-      notes: req.body.notes ? req.body.notes.trim() : '',
+      type,
+      amount: Number(amount),
+      category: category.trim(),
+      date: new Date(date),
+      notes: notes ? notes.trim() : '',
+      isRecurring: recurring,
+      recurrenceFrequency: recurring ? recurrenceFrequency : null,
     },
     { new: true, runValidators: true }
   );
@@ -118,9 +144,23 @@ const deleteTransaction = asyncHandler(async (req, res) => {
   });
 });
 
+/**
+ * POST /api/transactions/generate-recurring
+ * Manually trigger generation of due recurring transactions.
+ * Useful for testing without waiting for the next fetch.
+ */
+const generateRecurring = asyncHandler(async (req, res) => {
+  const created = await generateDueRecurringTransactions(req.user._id);
+  res.status(200).json({
+    message: `Generated ${created.length} recurring transaction(s)`,
+    data: created,
+  });
+});
+
 module.exports = {
   getTransactions,
   createTransaction,
   updateTransaction,
   deleteTransaction,
+  generateRecurring,
 };

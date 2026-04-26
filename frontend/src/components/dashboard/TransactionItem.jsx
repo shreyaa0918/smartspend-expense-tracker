@@ -7,11 +7,23 @@ export default function TransactionItem({ transaction, onEdit, onDelete, disable
   return (
     <li className="transaction-item">
       <div>
-        <p className="transaction-item__category">{transaction.category}</p>
+        <div className="transaction-item__title-row">
+          <p className="transaction-item__category">{transaction.category}</p>
+          {transaction.isRecurring && (
+            <span className="badge badge--recurring">
+              🔁 {transaction.recurrenceFrequency}
+            </span>
+          )}
+          {transaction.recurringParentId && !transaction.isRecurring && (
+            <span className="badge badge--auto">auto</span>
+          )}
+        </div>
         <p className="transaction-item__meta">
           {transaction.type} • {formattedDate}
         </p>
-        {transaction.notes ? <p className="transaction-item__notes">{transaction.notes}</p> : null}
+        {transaction.notes ? (
+          <p className="transaction-item__notes">{transaction.notes}</p>
+        ) : null}
       </div>
 
       <div className="transaction-item__right">
