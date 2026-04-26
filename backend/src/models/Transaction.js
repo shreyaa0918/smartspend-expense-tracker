@@ -8,6 +8,22 @@ const transactionSchema = new mongoose.Schema(
     category: { type: String, required: true },
     date: { type: Date, required: true },
     notes: { type: String, default: '', maxlength: 200, trim: true },
+
+    // ── Recurring fields ──────────────────────────────────────────────────────
+    isRecurring: { type: Boolean, default: false },
+    recurrenceFrequency: {
+      type: String,
+      enum: ['weekly', 'monthly', null],
+      default: null,
+    },
+    // The "template" transaction that spawned this one (null for originals)
+    recurringParentId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Transaction',
+      default: null,
+    },
+    // Last date we generated a child from this template
+    lastGeneratedDate: { type: Date, default: null },
   },
   { timestamps: true }
 );
