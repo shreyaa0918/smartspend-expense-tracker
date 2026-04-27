@@ -1,10 +1,11 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   setEditingTransaction
 } from "../../features/transactions/transactionSlice";
 import { deleteTransaction } from "../../features/transactions/transactionThunks";
 import TransactionItem from "./TransactionItem";
+import ConfirmModal from "../common/ConfirmModal";
 
 function inDateRange(transactionDate, startDate, endDate) {
   const value = new Date(transactionDate).getTime();
@@ -26,6 +27,7 @@ function inDateRange(transactionDate, startDate, endDate) {
 export default function TransactionList({ mode = "filtered", limit = null }) {
   const dispatch = useDispatch();
   const { items, filters, loading, submitting } = useSelector((state) => state.transactions);
+  const [deleteId, setDeleteId] = useState(null);
 
   const filteredTransactions = useMemo(() => {
     if (mode === "recent") {
@@ -43,8 +45,11 @@ export default function TransactionList({ mode = "filtered", limit = null }) {
     });
   }, [items, filters, mode, limit]);
 
-  const onDelete = (id) => {
-    dispatch(deleteTransaction(id));
+  const confirmDelete = () => {
+    if (deleteId) {
+      dispatch(deleteTransaction(deleteId));
+      setDeleteId(null);
+    }
   };
 
   if (loading) {
@@ -60,16 +65,26 @@ export default function TransactionList({ mode = "filtered", limit = null }) {
   }
 
   return (
-    <ul className="transaction-list">
-      {filteredTransactions.map((transaction) => (
-        <TransactionItem
-          key={transaction._id}
-          transaction={transaction}
-          onEdit={(item) => dispatch(setEditingTransaction(item))}
-          onDelete={onDelete}
-          disabled={submitting}
-        />
-      ))}
-    </ul>
+    <>
+      <ul className="transaction-list">
+        {filteredTransactions.map((transaction) => (
+          <TransactionItem
+            key={transaction._id}
+            transaction={transaction}
+            onEdit={(item) => dispatch(setEditingTransaction(item))}
+            onDelete={(id) => setDeleteId(id)}
+            disabled={submitting}
+          />
+        ))}
+      </ul>
+
+      <ConfirmModal
+        isOpen={!!deleteId}
+        title="Confirm Delete?"
+        message="Are you sure you want to delete this transaction? This action cannot be undone."
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteId(null)}
+      />
+    </>
   );
 }
